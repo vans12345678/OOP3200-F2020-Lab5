@@ -1,7 +1,5 @@
 #include <iomanip>
 #include <iostream>
-
-
 #include "Vector2D.h"
 
 
