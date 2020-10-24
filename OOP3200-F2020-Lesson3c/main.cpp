@@ -6,13 +6,13 @@
 #include "Vector2D.h"
 
 
-
 int main()
 {
 
 	std::map<std::string, Vector2D<int>*> vectorObjects;
+	std::string keyFind;
+	const std::string fileName = "MockDataForTesting.txt";
 	std::ifstream infile;
-	std::string fileName = "MockDataForTesting.txt";
 	
 	
 	try
@@ -43,7 +43,7 @@ int main()
 		if (infile.is_open())
 		{
 			std::string key;
-			float x, y = 0;
+			int x, y = 0;
 
 			while (!infile.fail())
 			{
@@ -54,33 +54,78 @@ int main()
 				infile.ignore(1, ',');
 				infile >> y;
 				infile.ignore(1, ')');
-
-				auto* tempObject = new Vector2D<int>(x, y);
-				vectorObjects[key] = tempObject;
-
+				
+				//If cannot take in any information
+				if(infile.fail())
+				{
+					std::cout << "It appears no information can be taken in..." << std::endl;
+				}
+				//If there is information to take in
+				else
+				{
+					auto* tempObject = new Vector2D<int>(x, y);
+					vectorObjects[key] = tempObject;
+				}
+				
 			}
 
+			//Close input file stream
 			infile.close();
+			
+			//If there is no objects in map
+			if (vectorObjects.empty())
+			{
+				throw std::runtime_error("Map is empty, does file have valid data in correct format?");
+			}
 		}
 
 		infile.close();
 		//For every vector2D in vectorObjects loop
-		
 		float totalDistance = 0;
-		for (auto& it: vectorObjects)
+		
+	
+			// if()
+			// {
+			// 	it = vectorObjects.erase(it);
+			// 	next = vectorObjects.erase(next);
+			// }
+
+		for(auto it = vectorObjects.begin(); it !=vectorObjects.end(); ++it)
 		{
-			std::string key = it.first;
+			auto next = it;
+			
 			std::cout << "---------------------------------" << std::endl;
-			std::cout << "Key:" << it.first << std::endl;
+			std::cout << "Key:" << it->first << std::endl;
 			std::cout << "Value: " << std::endl;			
-			std::cout << it.second->ToString() << std::endl;
-			// //Calculate distance
-			// float distance = Vector2D<float>::Distance(vectorObjects.at(key)->GetMagnitude(), vectorObjects.at(key)->GetMagnitude());
-			// std::cout << "Distance between: " << it.first << " and " <<  << std::to_string(distance) << std::endl;
-			// totalDistance += distance;
+			std::cout << it->second->ToString() << std::endl;
+
+			if(std::next(it) != vectorObjects.end())
+			{
+				++next;
+				std::cout << "Distance between: " << it->first << " and " << next->first <<  std::endl;
+			}
+			
+			
 		}
 		
+
+			
+		// //Calculate distance
+		// const auto next= std::next(it.first.begin(), 1);
+		// float distance = Vector2D<float>::Distance(vectorObjects.at(key)->GetMagnitude(), vectorObjects.at(key)->GetMagnitude());
+			
+
+		
 		std::cout << "There are " << vectorObjects.size() << " amount of vectorObjects in map." << std::endl;
+		std::cout << "Enter a key to search for in the map: ";
+		std::cin >> keyFind;
+
+		std::cout << "---------------------------------" << std::endl;
+		std::cout << "Key:" << keyFind << std::endl;
+		std::cout << "Value: " << std::endl;
+		std::cout << vectorObjects[keyFind]->ToString() << std::endl;
+
+		
 		
 
 		/******************************************************************************
@@ -114,7 +159,7 @@ int main()
 	 ******************************************************************************/
 	catch(std::exception& e)  // an exception was thrown
 	{	
-		std::cout << "Could not open file "<< e.what();
+		std::cout << "ERROR "<< e.what();
 	}
 
 	// END-OF-PROGRAM
