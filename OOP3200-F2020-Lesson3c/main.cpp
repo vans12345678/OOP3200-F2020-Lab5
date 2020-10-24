@@ -102,7 +102,8 @@ int main()
 			if(std::next(it) != vectorObjects.end())
 			{
 				++next;
-				std::cout << "Distance between: " << it->first << " and " << next->first <<  std::endl;
+				float distance = Vector2D<float>::Distance(vectorObjects[it->first]->GetMagnitude(), vectorObjects[next->first]->GetMagnitude());
+				std::cout << "Distance between: " << it->first << " and " << next->first << " is: " << distance << std::endl;
 			}
 			
 			
@@ -111,8 +112,7 @@ int main()
 
 			
 		// //Calculate distance
-		// const auto next= std::next(it.first.begin(), 1);
-		// float distance = Vector2D<float>::Distance(vectorObjects.at(key)->GetMagnitude(), vectorObjects.at(key)->GetMagnitude());
+		// const auto next= std::next(it.first.begin(), 1)d
 			
 
 		
