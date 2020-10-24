@@ -122,9 +122,7 @@ Vector2D<T>::Vector2D(T x, T y) : m_x(x), m_y(y)
 
 template <class T>
 Vector2D<T>::~Vector2D()
-{
-	
-}
+{}
 
 template <class T>
 Vector2D<T>::Vector2D(const Vector2D& rhs)

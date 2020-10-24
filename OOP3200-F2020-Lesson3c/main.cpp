@@ -1,20 +1,27 @@
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <iterator>
 #include "Vector2D.h"
 
 
 
 int main()
 {
+
+	std::map<std::string, Vector2D<int>*> vectorObjects;
+	std::ifstream infile;
+	std::string fileName = "MockDataForTesting.txt";
+	
+	
 	try
 	{
 		/************************
 		 *	DECLARATIONS
 		 ************************/
-
-
-
 		
+
 		/******************************************************************************
 		 *	Reading Labels/Points into the Map:
 		 *	Attempt to open the data file.  If the data file opens, read a label,
@@ -26,7 +33,54 @@ int main()
 		 *	the correct format. Only continue processing if the file was opened and the
 		 *	map is not empty.
 		 ******************************************************************************/
+		
+		infile.open(fileName.c_str());
+		if(!infile)
+		{
+			throw std::runtime_error("Cannot open file specified.");
+		}
+		
+		if (infile.is_open())
+		{
+			std::string key;
+			float x, y = 0;
 
+			while (!infile.fail())
+			{
+				infile >> key;
+				infile.ignore(1, ' ');
+				infile.ignore(1, '(');
+				infile >> x;
+				infile.ignore(1, ',');
+				infile >> y;
+				infile.ignore(1, ')');
+
+				auto* tempObject = new Vector2D<int>(x, y);
+				vectorObjects[key] = tempObject;
+
+			}
+
+			infile.close();
+		}
+
+		infile.close();
+		//For every vector2D in vectorObjects loop
+		
+		float totalDistance = 0;
+		for (auto& it: vectorObjects)
+		{
+			std::string key = it.first;
+			std::cout << "---------------------------------" << std::endl;
+			std::cout << "Key:" << it.first << std::endl;
+			std::cout << "Value: " << std::endl;			
+			std::cout << it.second->ToString() << std::endl;
+			// //Calculate distance
+			// float distance = Vector2D<float>::Distance(vectorObjects.at(key)->GetMagnitude(), vectorObjects.at(key)->GetMagnitude());
+			// std::cout << "Distance between: " << it.first << " and " <<  << std::to_string(distance) << std::endl;
+			// totalDistance += distance;
+		}
+		
+		std::cout << "There are " << vectorObjects.size() << " amount of vectorObjects in map." << std::endl;
 		
 
 		/******************************************************************************
@@ -58,9 +112,9 @@ int main()
 	 *	Catch any std::exception thrown. Report to the user that a run-time error
 	 *	occurred and show what exception was thrown.
 	 ******************************************************************************/
-	catch(...)  // an exception was thrown
-	{
-		
+	catch(std::exception& e)  // an exception was thrown
+	{	
+		std::cout << "Could not open file "<< e.what();
 	}
 
 	// END-OF-PROGRAM
