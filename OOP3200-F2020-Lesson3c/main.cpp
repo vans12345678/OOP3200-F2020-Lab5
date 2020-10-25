@@ -9,11 +9,12 @@
 int main()
 {
 
-	std::map<std::string, Vector2D<int>*> vectorObjects;
-	std::string keyFind;
+	std::map<std::string, Vector2D<float>*> vectorObjects;
+	std::string proceed;
 	const std::string fileName = "MockDataForTesting.txt";
 	std::ifstream infile;
-	
+	auto head = vectorObjects.begin();
+	float totalDistance = 0;
 	
 	try
 	{
@@ -37,13 +38,13 @@ int main()
 		infile.open(fileName.c_str());
 		if(!infile)
 		{
-			throw std::runtime_error("Cannot open file specified.");
+			throw std::runtime_error(fileName + " could not be opened for input. Check that the file exists.\n");
 		}
 		
 		if (infile.is_open())
 		{
 			std::string key;
-			int x, y = 0;
+			float x, y = 0;
 
 			while (!infile.fail())
 			{
@@ -56,14 +57,14 @@ int main()
 				infile.ignore(1, ')');
 				
 				//If cannot take in any information
-				if(infile.fail())
+				if(infile.fail() && infile.peek() )
 				{
 					std::cout << "It appears no information can be taken in..." << std::endl;
 				}
 				//If there is information to take in
 				else
 				{
-					auto* tempObject = new Vector2D<int>(x, y);
+					auto* tempObject = new Vector2D<float>(x, y);
 					vectorObjects[key] = tempObject;
 				}
 				
@@ -75,24 +76,18 @@ int main()
 			//If there is no objects in map
 			if (vectorObjects.empty())
 			{
-				throw std::runtime_error("Map is empty, does file have valid data in correct format?");
+				throw std::runtime_error("Map is empty. Check that the file contains valid data in the correct format.");
 			}
 		}
 
 		infile.close();
-		//For every vector2D in vectorObjects loop
-		float totalDistance = 0;
 		
-	
-			// if()
-			// {
-			// 	it = vectorObjects.erase(it);
-			// 	next = vectorObjects.erase(next);
-			// }
+		//For every vector2D in vectorObjects loop
 
 		for(auto it = vectorObjects.begin(); it !=vectorObjects.end(); ++it)
 		{
 			auto next = it;
+			float distance = 0;
 			
 			std::cout << "---------------------------------" << std::endl;
 			std::cout << "Key:" << it->first << std::endl;
@@ -102,11 +97,11 @@ int main()
 			if(std::next(it) != vectorObjects.end())
 			{
 				++next;
-				float distance = Vector2D<float>::Distance(vectorObjects[it->first]->GetMagnitude(), vectorObjects[next->first]->GetMagnitude());
+				distance = Vector2D<float>::Distance(vectorObjects[it->first]->GetMagnitude(), vectorObjects[next->first]->GetMagnitude());
+				totalDistance += distance;
 				std::cout << "Distance between: " << it->first << " and " << next->first << " is: " << distance << std::endl;
 			}
-			
-			
+						
 		}
 		
 
@@ -114,16 +109,43 @@ int main()
 		// //Calculate distance
 		// const auto next= std::next(it.first.begin(), 1)d
 			
-
+		std::string selectedPointKey;
 		
 		std::cout << "There are " << vectorObjects.size() << " amount of vectorObjects in map." << std::endl;
-		std::cout << "Enter a key to search for in the map: ";
-		std::cin >> keyFind;
+		std::cout << "The total distance of all the objects in map is: " << totalDistance << std::endl;
 
-		std::cout << "---------------------------------" << std::endl;
-		std::cout << "Key:" << keyFind << std::endl;
-		std::cout << "Value: " << std::endl;
-		std::cout << vectorObjects[keyFind]->ToString() << std::endl;
+		
+
+
+		
+
+		while (selectedPointKey != "quit")
+		{			
+			std::cout << "\nEnter the label of the point you wish to go to ('quit' to end): ";
+			std::cin >> selectedPointKey;
+			auto selectedPoint = vectorObjects.find(selectedPointKey);
+
+			if(vectorObjects.find(selectedPointKey) == vectorObjects.end())
+			{
+				std::cout << "\nThere is no point laebelled '"<< selectedPointKey<<"' in the map." << std::endl;
+			}
+			else
+			{
+				float selectedDistance = Vector2D<float>::Distance(vectorObjects[head->first]->GetMagnitude(), vectorObjects[selectedPoint->first]->GetMagnitude());
+				std::cout << "Distance between: " << head->first << " and " << selectedPoint->first << " is: " << selectedDistance <<std::endl;
+			}
+
+		}
+		
+		
+		
+		// std::cout << "Enter a key to search for in the map: ";
+		// std::cin >> keyFind;
+		//
+		// std::cout << "---------------------------------" << std::endl;
+		// std::cout << "Key:" << keyFind << std::endl;
+		// std::cout << "Value: " << std::endl;
+		// std::cout << vectorObjects[keyFind]->ToString() << std::endl;
 
 		
 		
