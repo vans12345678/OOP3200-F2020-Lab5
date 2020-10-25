@@ -1,3 +1,9 @@
+/*
+ * Name: Andre Agrippa, Najeeblulla Hussaini
+ * Date: 10/25/2020
+ * File: main.cpp
+ * Purpose: To read text from a file and create/display a map of vector2d objects
+ */
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -8,20 +14,19 @@
 
 int main()
 {
-
-	std::map<std::string, Vector2D<float>*> vectorObjects;
-	std::string proceed;
-	const std::string fileName = "MockDataForTesting.txt";
-	std::ifstream infile;
-	auto head = vectorObjects.begin();
-	float totalDistance = 0;
-	
 	try
 	{
 		/************************
 		 *	DECLARATIONS
 		 ************************/
 		
+		std::map<std::string, Vector2D<float>*> vectorObjects;//map containing <key, Vector2D object>
+		std::string selectedPointKey; //User selected point for comparison
+		std::string proceed; //When = to 'quit' user will exit loop
+		const std::string fileName = "MockDataForTesting.txt";//Filename for processing
+		std::ifstream infile;
+		
+		float totalDistance = 0;//total distance between all objects in map
 
 		/******************************************************************************
 		 *	Reading Labels/Points into the Map:
@@ -34,18 +39,22 @@ int main()
 		 *	the correct format. Only continue processing if the file was opened and the
 		 *	map is not empty.
 		 ******************************************************************************/
-		
+
+		//Attempt to open file
 		infile.open(fileName.c_str());
+
+		//If unable to open file
 		if(!infile)
 		{
 			throw std::runtime_error(fileName + " could not be opened for input. Check that the file exists.\n");
 		}
-		
+		//If file able to open
 		if (infile.is_open())
 		{
 			std::string key;
 			float x, y = 0;
 
+			//While there is still valid data, place key and vector object into a single element in map
 			while (!infile.fail())
 			{
 				infile >> key;
@@ -55,19 +64,9 @@ int main()
 				infile.ignore(1, ',');
 				infile >> y;
 				infile.ignore(1, ')');
-				
-				//If cannot take in any information
-				if(infile.fail() && infile.peek() )
-				{
-					std::cout << "It appears no information can be taken in..." << std::endl;
-				}
-				//If there is information to take in
-				else
-				{
-					auto* tempObject = new Vector2D<float>(x, y);
-					vectorObjects[key] = tempObject;
-				}
-				
+							
+				auto* tempObject = new Vector2D<float>(x, y);
+				vectorObjects[key] = tempObject;				
 			}
 
 			//Close input file stream
@@ -80,75 +79,8 @@ int main()
 			}
 		}
 
+		//Close input filestream
 		infile.close();
-		
-		//For every vector2D in vectorObjects loop
-
-		for(auto it = vectorObjects.begin(); it !=vectorObjects.end(); ++it)
-		{
-			auto next = it;
-			float distance = 0;
-			
-			std::cout << "---------------------------------" << std::endl;
-			std::cout << "Key:" << it->first << std::endl;
-			std::cout << "Value: " << std::endl;			
-			std::cout << it->second->ToString() << std::endl;
-
-			if(std::next(it) != vectorObjects.end())
-			{
-				++next;
-				distance = Vector2D<float>::Distance(vectorObjects[it->first]->GetMagnitude(), vectorObjects[next->first]->GetMagnitude());
-				totalDistance += distance;
-				std::cout << "Distance between: " << it->first << " and " << next->first << " is: " << distance << std::endl;
-			}
-						
-		}
-		
-
-			
-		// //Calculate distance
-		// const auto next= std::next(it.first.begin(), 1)d
-			
-		std::string selectedPointKey;
-		
-		std::cout << "There are " << vectorObjects.size() << " amount of vectorObjects in map." << std::endl;
-		std::cout << "The total distance of all the objects in map is: " << totalDistance << std::endl;
-
-		
-
-
-		
-
-		while (selectedPointKey != "quit")
-		{			
-			std::cout << "\nEnter the label of the point you wish to go to ('quit' to end): ";
-			std::cin >> selectedPointKey;
-			auto selectedPoint = vectorObjects.find(selectedPointKey);
-
-			if(vectorObjects.find(selectedPointKey) == vectorObjects.end())
-			{
-				std::cout << "\nThere is no point laebelled '"<< selectedPointKey<<"' in the map." << std::endl;
-			}
-			else
-			{
-				float selectedDistance = Vector2D<float>::Distance(vectorObjects[head->first]->GetMagnitude(), vectorObjects[selectedPoint->first]->GetMagnitude());
-				std::cout << "Distance between: " << head->first << " and " << selectedPoint->first << " is: " << selectedDistance <<std::endl;
-			}
-
-		}
-		
-		
-		
-		// std::cout << "Enter a key to search for in the map: ";
-		// std::cin >> keyFind;
-		//
-		// std::cout << "---------------------------------" << std::endl;
-		// std::cout << "Key:" << keyFind << std::endl;
-		// std::cout << "Value: " << std::endl;
-		// std::cout << vectorObjects[keyFind]->ToString() << std::endl;
-
-		
-		
 
 		/******************************************************************************
 		 *	Determine the Total Distance Between All Points in Order:
@@ -161,7 +93,29 @@ int main()
 		 *	to the user how many points the map contains and what the total distance is.
 		 ******************************************************************************/
 
-				
+		//For every vector2D in vectorObjects loop
+		for(auto it = vectorObjects.begin(); it !=vectorObjects.end(); ++it)
+		{
+			auto next = it;
+			float distance = 0;
+
+			std::cout << "---------------------------------" << std::endl;
+			std::cout << "Key:" << it->first << std::endl;
+			std::cout << "Value: " << std::endl;			
+			std::cout << it->second->ToString() << std::endl;
+
+			//Once the next iterator does not exceed map end
+			if(std::next(it) != vectorObjects.end())
+			{
+				++next;
+				distance = Vector2D<float>::Distance(vectorObjects[it->first]->GetMagnitude(), vectorObjects[next->first]->GetMagnitude());
+				totalDistance += distance;
+				std::cout << "Distance between: " << it->first << " and " << next->first << " is: " << distance << std::endl;
+			}						
+		}
+
+		std::cout << "There are " << vectorObjects.size() << " amount of vectorObjects in map." << std::endl;
+		std::cout << "The total distance of all the objects in map is: " << totalDistance << std::endl;		
 
 		/******************************************************************************
 		 *	Determine the Distance Between the Start Point and a User Selected Point:
@@ -173,6 +127,28 @@ int main()
 		 *	Repeat these steps until the user enters "quit".
 		 ******************************************************************************/
 		
+		//While user input != 'quit'
+		while (selectedPointKey != "quit")
+		{			
+			std::cout << "\nEnter the label of the point you wish to go to ('quit' to end): ";
+			std::cin >> selectedPointKey;
+
+			auto selectedPoint = vectorObjects.find(selectedPointKey);
+			auto head = vectorObjects.begin();//beginning of map
+			//
+			//If the user input is not found in the map
+			if(vectorObjects.find(selectedPointKey) == vectorObjects.end())
+			{
+				std::cout << "\nThere is no point labelled '"<< selectedPointKey <<"' in the map." << std::endl;
+				vectorObjects.erase(selectedPointKey);
+			}
+			//If input is valid, calculate distance between Start Point and Selected Point
+			else
+			{
+				float selectedDistance = Vector2D<float>::Distance(vectorObjects[head->first]->GetMagnitude(), vectorObjects[selectedPoint->first]->GetMagnitude());
+				std::cout << "Distance between: " << head->first << " and " << selectedPoint->first << " is: "  << selectedDistance << std::endl;		
+			}
+		}
 	}
 	/******************************************************************************
 	 *	Exception Handling:

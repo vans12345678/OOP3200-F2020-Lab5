@@ -1,3 +1,9 @@
+/*
+ * Name: Andre Agrippa, Najeeblulla Hussaini
+ * Date: 10/25/2020
+ * File: Vector2D.h
+ * Purpose: Vector2D template class
+ */
 #pragma once
 #ifndef __VECTOR2D__
 #define __VECTOR2D__
